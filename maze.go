@@ -1,37 +1,42 @@
 package maze
 
-type MazeNode struct {
-	exit                     bool
-	north, east, west, south *MazeNode
+// Room a maze node or room with 4 doors and a possible exit.
+type Room struct {
+	Exit  bool
+	North *Room
+	East  *Room
+	South *Room
+	West  *Room
 }
 
-func FindExit(node *MazeNode) bool {
-	visited := make(map[*MazeNode]bool)
-	return FindExitWithVisit(node, visited)
+// FindExit will traverse MazeNode looking for an exit.
+func FindExit(node *Room) bool {
+	visited := make(map[*Room]bool)
+	return findExitWithVisit(node, visited)
 }
 
-func FindExitWithVisit(node *MazeNode, visited map[*MazeNode]bool) bool {
+func findExitWithVisit(node *Room, visited map[*Room]bool) bool {
 	visited[node] = true
-	if node.exit {
+	if node.Exit {
 		return true
 	}
-	var found bool = false
-	if !visited[node.north] {
-		found = FindExitWithVisit(node.north, visited)
+	var found = false
+	if node.North != nil && !visited[node.North] {
+		found = findExitWithVisit(node.North, visited)
 	}
-	if !visited[node.south] {
+	if node.South != nil && !visited[node.South] {
 		if !found {
-			found = FindExitWithVisit(node.south, visited)
+			found = findExitWithVisit(node.South, visited)
 		}
 	}
-	if !visited[node.east] {
+	if node.East != nil && !visited[node.East] {
 		if !found {
-			found = FindExitWithVisit(node.east, visited)
+			found = findExitWithVisit(node.East, visited)
 		}
 	}
-	if !visited[node.west] {
+	if node.West != nil && !visited[node.West] {
 		if !found {
-			found = FindExitWithVisit(node.west, visited)
+			found = findExitWithVisit(node.West, visited)
 		}
 	}
 	return found
